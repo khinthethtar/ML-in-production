@@ -1,0 +1,103 @@
+pip install pydrive2
+pip install dvc
+pip install --upgrade pywin32==225
+
+git init
+
+dvc init
+
+dvc add weather-data/2006-04-10.csv
+
+git add 'weather-data\2006-04-10.csv.dvc' 'weather-data\.gitignore'
+
+dvc config core.autostage true
+
+git commit -m "Add weather data"
+
+dvc remote add -d storage gdrive://1AbSVOB628l3gNA6iQrh1bvSA1Sx5GRPJ
+
+git commit ".dvc/config" -m "Configure remote storage"
+
+dvc push
+
+cat weather-data/.gitignore
+
+rm -f weather-data/2006-04-10.csv
+
+rm -rf .dvc/cache
+
+dvc pull
+
+cp weather-data/2006-04-10.csv /tmp/2006-04-10.csv
+
+cat /tmp/2006-04-10.csv >> weather-data/2006-04-10.csv
+
+ls -lh weather-data
+
+dvc add weather-data/2006-04-10.csv
+
+git add weather-data/2006-04-10.csv.dvc
+
+git commit -m "Dataset Updates"
+
+dvc push
+
+git log --oneline
+
+git checkout HEAD^1 weather-data/2006-04-10.csv.dvc
+
+dvc checkout
+
+git commit weather-data/2006-04-10.csv.dvc -m "Revert dataset updates"
+
+ls -lh weather-data
+
+#Change somethin in 2006-04-10.csv
+ls -lh weather-data
+
+dvc add weather-data/2006-04-10.csv
+
+git add weather-data/2006-04-10.csv.dvc
+
+git commit -m "Dataset updates"
+
+dvc push
+
+rm -f data/data.xml
+
+dvc pull
+
+#########################################################
+
+
+
+
+dvc run --force -n filter -d filter.py -d weather-data/2006-04-10.csv -p filter.value -o output/filter python filter.py
+
+dvc repro
+
+#change filter parameter value to 20
+
+dvc run --force -n filter -d filter.py -d weather-data/2006-04-10.csv -p filter.value -o output/filter python filter.py
+
+dvc repro
+
+dvc run --force -n training -p training.num_rows -d training.py -d output/filter -o output/training python training.py output/filter
+
+dvc dag
+
+dvc repro
+
+#change filter parameter num_rows to 5
+
+dvc repro
+
+#change a value in csv file 
+
+dvc repro
+
+dvc run --force -n training -p training.num_rows -d training.py -d weather-data/2006-04-10.csv -d output/filter -o output/training python training.py output/filter
+
+#change a value in csv file 
+
+dvc repro
